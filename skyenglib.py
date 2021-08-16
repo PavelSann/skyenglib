@@ -68,6 +68,8 @@ class Meaning(Result):
 		self.transcription=None
 		self.translationText=data['translation']['text']
 		self.translationNote=data['translation']['note']
+		if self.translationNote is None:
+			self.translationNote=''
 		self.partOfSpeech=PartType(data['partOfSpeechCode'])
 		Result.__init__(self,data)
 
