@@ -23,7 +23,7 @@ if __name__ == '__main__':
 	print('Это модуль для импорта')
 
 def obj_list(jsonArray,elementType)-> typing.List:
-	result: List[elementType]=[]
+	result: typing.List[elementType]=[]
 	for r in jsonArray:
 		e=elementType(r)
 		result.append(e)
@@ -58,7 +58,84 @@ class Result:
 	def __init__(self,data):
 		self.__dict__.update(data)
 
+class Translation(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
+	def __init__(self, data):
+		self.text=None
+		self.note=None
+		Result.__init__(self,data)
+		if self.note is None:
+			self.note=""
+		
+	def __str__(self):
+		return self.text+" "+self.note
+		
+class Example(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
+	def __init__(self, data):
+		self.text=None
+		self.soundUrl=None
+		Result.__init__(self,data)
+
+
+class Image(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
+	def __init__(self, data):
+		self.url=None
+		Result.__init__(self,data)
+		
+class Definition(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
+	def __init__(self, data):
+		self.text=None
+		self.soundUrl=None
+		Result.__init__(self,data)
+
+
+class AlternativeTranslation(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
+	def __init__(self, data):
+		self.text=None
+		Result.__init__(self,data)
+		self.translation=Translation(data['translation'])
+
+class MeaningWithSimilarTranslation(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
+	def __init__(self, data):
+		self.meaningId=None
+		self.frequencyPercent=None
+		self.partOfSpeechAbbreviation=None
+		self.partOfSpeechAbbreviation=None
+		Result.__init__(self,data)
+		self.translation=Translation(data['translation'])
+
 class Meaning(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
+	def __init__(self,data):
+		self.id=None
+		self.wordId=None
+		self.difficultyLevel=None
+		self.partOfSpeechCode=None
+		self.prefix=None
+		self.text=None
+		self.soundUrl=None
+		self.transcription=None
+		self.properties:dict =data['properties']
+		self.updatedAt=None
+		self.mnemonics=None
+		self.examples=None
+		
+		Result.__init__(self,data)
+		self.partOfSpeech=PartType(data['partOfSpeechCode'])
+		self.images=obj_list(data['images'],Image)
+		self.translation=Translation(data['translation'])
+		self.definition=Definition(data['definition'])
+		self.alternativeTranslations=obj_list(data['alternativeTranslations'],AlternativeTranslation)
+		self.examples=obj_list(data['examples'],Example)
+		self.meaningsWithSimilarTranslation=obj_list(data['meaningsWithSimilarTranslation'],MeaningWithSimilarTranslation)
+
+class MeaningShort(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
 	def __init__(self,data):
 		self.id=None
 		self.partOfSpeechCode=None
@@ -66,19 +143,19 @@ class Meaning(Result):
 		self.imageUrl=None
 		self.soundUrl=None
 		self.transcription=None
-		self.translationText=data['translation']['text']
-		self.translationNote=data['translation']['note']
-		if self.translationNote is None:
-			self.translationNote=''
-		self.partOfSpeech=PartType(data['partOfSpeechCode'])
 		Result.__init__(self,data)
+		self.translation=Translation(data['translation'])
+		self.partOfSpeech=PartType(data['partOfSpeechCode'])
+
+
 
 class Word(Result):
+	'https://dictionary.skyeng.ru/doc/api/external'
 	def __init__(self, data):
 		self.id=None
 		self.text=None
 		Result.__init__(self,data)
-		self.meanings:typing.List[Meaning]=obj_list(data['meanings'],Meaning)
+		self.meanings:typing.List[MeaningShort]=obj_list(data['meanings'],MeaningShort)
 	
 
 class SkyengLib:
@@ -97,9 +174,15 @@ class SkyengLib:
 		return not SkyengLib.req('dictionary','public/v1/words/search?search=test') == None
 
 	@staticmethod
-	def searchInDictionary(str,page=1,pageSize=100)-> typing.List[Word]:
-		jsonData= SkyengLib.req('dictionary',f'public/v1/words/search?search={str}&page={page!s}&pageSize={pageSize!s}')
+	def searchWords(word,page=1,pageSize=100)-> typing.List[Word]:
+		jsonData= SkyengLib.req('dictionary',f'public/v1/words/search?search={word}&page={page!s}&pageSize={pageSize!s}')
 		return obj_list(jsonData,Word)	
+	
+	@staticmethod
+	def getMeanings(ids)-> typing.List[Meaning]:
+		'ids - An array of meaning ids. Separated by a comma'
+		jsonData= SkyengLib.req('dictionary',f'public/v1/meanings?ids={ids}')
+		return obj_list(jsonData,Meaning)	
 	
 	def __init__(self,email,token):
 		"""Constructor"""
