@@ -1,14 +1,9 @@
-#!/usr/bin/python3
-#https://vimbox.skyeng.ru/grammar/1
-#https://grammar.skyeng.ru/api/v2/materials/1?withMistakes=true
-#https://grammar.skyeng.ru/api/v2/materials/523?sectionTitle=&withMistakes=true&withMoreMaterialsFromSameNodes=true&withRelatedMaterials=true&withCharts=true&withVideos=tru
-#https://grammar.skyeng.ru/api/v2/materials/spotlight?id=421
-#https://grammar.skyeng.ru/api/v2/materials/spotlight?levels[]=2&search=gfff&withHighlights=true&pageSize=100
-#https://grammar.skyeng.ru/api/v2/materials/spotlight?withHighlights=true&pageSize=100
+#!/usr/bin/env python3
+"""
+This is a module of the python for using a "SkyEng" platform
 
-#https://habr.com/ru/company/skyeng/blog/330456/
-#https://words.skyeng.ru/api/doc/public
-#https://dictionary.skyeng.ru/doc/api/external
+"""
+
 
 import requests
 import json
@@ -16,9 +11,12 @@ import dataclasses
 import pickle 
 import typing
 from enum import Enum,unique
-
-
 #import dataclasses_json
+
+__author__ = "PavelSann"
+__license__ = "GPL"
+__email__ = "PawelSann@gmail.com"
+
 if __name__ == '__main__':
 	print('Это модуль для импорта')
 
