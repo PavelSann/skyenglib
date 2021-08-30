@@ -159,6 +159,7 @@ class Word(Result):
 class SkyengLib:
 	@staticmethod
 	def req(module,path):
+		#print(f'request  https://{module}.skyeng.ru/api/{path}')
 		r=requests.get(f'https://{module}.skyeng.ru/api/{path}')
 		if r.status_code == 200:
 			return json.loads(r.text)
